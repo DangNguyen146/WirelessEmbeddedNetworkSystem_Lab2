@@ -145,8 +145,17 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+
+  // access point
+  phy.EnablePcap("lab2_ap", staDevices.Get (0));
+  // updclient
+  phy.EnablePcap("lab2_udpclient", staDevices.Get (1));
+  // udpserver
+  phy.EnablePcap("lab2_udpserver", staDevices.Get (4));
+
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
+
   Simulator::Destroy ();
   return 0;
 }
