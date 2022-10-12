@@ -143,15 +143,16 @@ main (int argc, char *argv[])
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
-
+  AsciiTraceHelper ascii;
+  phy.EnableAscii(ascii.CreateFileStream("./lab2/lab2.tr"), staDevices);
   // access point
-  phy.EnablePcap("./lab2/lab2_ap", staDevices.Get (0));
+  phy.EnablePcap("./lab2/lab2_ap", staDevices.Get (0), true);
   // updclient
-  phy.EnablePcap("./lab2/lab2_udpclient", staDevices.Get (1));
+  phy.EnablePcap("./lab2/lab2_udpclient", staDevices.Get (1), true);
   // udpserver
-  phy.EnablePcap("./lab2/lab2_udpserver", staDevices.Get (4));
+  phy.EnablePcap("./lab2/lab2_udpserver", staDevices.Get (4), true);
+
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
