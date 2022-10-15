@@ -32,7 +32,7 @@ int
 main (int argc, char *argv[])
 {
   bool verbose = true;
-  uint32_t nWifi = 5;
+  uint32_t nWifi = 6;
 
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -125,7 +125,7 @@ main (int argc, char *argv[])
 //////////////////////////////////////////////////////////////////////////////////////////
   // ******* 5. Cài đặt UDP Echo Client và Server *******
 
-  // Cài đặt UDPEchoServer trên port 9000 ở node4
+  // Cài đặt UDPEchoServer trên port 9000 ở node5
   UdpEchoServerHelper echoServer (9000);
   ApplicationContainer serverApps = echoServer.Install (wifiStaNodes.Get (nWifi - 1));  // Cài lên node4
   serverApps.Start (Seconds (1.0));
@@ -136,18 +136,24 @@ main (int argc, char *argv[])
   echoClient.SetAttribute ("MaxPackets", UintegerValue (100));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
-
-  UdpEchoClientHelper echoClient2 (wifiInterfaces.GetAddress (nWifi - 1), 9002);
-  echoClient2.SetAttribute ("MaxPackets", UintegerValue (100));
-  echoClient2.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
-  echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
-
   // Cài lên node1
   ApplicationContainer clientApps = 
   echoClient.Install (wifiStaNodes.Get (1));
 
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
+
+   // Cài đặt UDPEchoClient trên một node thuộc WLAN
+  UdpEchoClientHelper echoClient2 (wifiInterfaces.GetAddress (nWifi - 1), 9000);
+  echoClient2.SetAttribute ("MaxPackets", UintegerValue (100));
+  echoClient2.SetAttribute ("Interval", TimeValue (Seconds (0.5)));
+  echoClient2.SetAttribute ("PacketSize", UintegerValue (1024));
+  // Cài lên node2
+  ApplicationContainer clientApps2 = 
+  echoClient2.Install (wifiStaNodes.Get (2));
+
+  clientApps2.Start (Seconds (2.0));
+  clientApps2.Stop (Seconds (10.0));
 
   AsciiTraceHelper ascii;
   phy.EnableAscii(ascii.CreateFileStream("./lab2/lab2.tr"), staDevices);
